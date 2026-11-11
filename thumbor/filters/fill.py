@@ -25,15 +25,19 @@ class Filter(BaseFilter):
     @filter_method(r"[\w]+", BaseFilter.Boolean)
     async def fill(self, color, fill_transparent=False):
         self.fill_engine = self.engine.__class__(self.context)
+        canvas_width = (
+            getattr(self.context.request, "canvas_width", None)
+            or self.context.request.width
+        )
+        canvas_height = (
+            getattr(self.context.request, "canvas_height", None)
+            or self.context.request.height
+        )
         target_width = (
-            self.context.request.width
-            if self.context.request.width != 0
-            else self.engine.size[0]
+            canvas_width if canvas_width != 0 else self.engine.size[0]
         )
         target_height = (
-            self.context.request.height
-            if self.context.request.height != 0
-            else self.engine.size[1]
+            canvas_height if canvas_height != 0 else self.engine.size[1]
         )
 
         # if the color is 'auto'

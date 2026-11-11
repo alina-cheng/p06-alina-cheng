@@ -27,9 +27,13 @@ class Filter(BaseFilter):
             8,
         ]:
             image_size = (image_size[1], image_size[0])
-        self.context.request.width = min(
-            self.context.request.width, image_size[0]
-        )
-        self.context.request.height = min(
-            self.context.request.height, image_size[1]
-        )
+        width = self.context.request.width
+        height = self.context.request.height
+        if width == "orig":
+            width = image_size[0]
+        if height == "orig":
+            height = image_size[1]
+        self.context.request.canvas_width = width
+        self.context.request.canvas_height = height
+        self.context.request.width = min(width, image_size[0])
+        self.context.request.height = min(height, image_size[1])
