@@ -276,7 +276,17 @@ class Engine(BaseEngine):
                     if pillow_features.check("libimagequant")
                     else None
                 )
-                self.image = self.image.quantize(method=quantize_method)
+                if requested_extension == ".gif" and self.image.mode == "RGBA":
+                    transparency_mask = self.image.getchannel("A").point(
+                        lambda alpha: 255 if alpha < 128 else 0
+                    )
+                    self.image = self.image.quantize(
+                        colors=255, method=quantize_method
+                    )
+                    self.image.paste(255, mask=transparency_mask)
+                    self.image.info["transparency"] = 255
+                else:
+                    self.image = self.image.quantize(method=quantize_method)
 
         ext = requested_extension or self.get_default_extension()
 
